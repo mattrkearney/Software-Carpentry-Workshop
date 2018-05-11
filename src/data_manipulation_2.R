@@ -85,3 +85,35 @@ wide <- gap_long %>%
   spread(var_names, obs_values)
 
 head(wide)
+
+
+# Databases in R ----------------------------------------------------------
+
+install.packages("RSQLite")
+library(RSQLite)
+library(DBI)
+
+conn <- dbConnect(drv = SQLite(), dbname = "data/survey.db")
+
+dbListTables(conn)
+dbListFields(conn, "Survey")
+
+coords <- dbGetQuery(conn, "SELECT lat, long FROM Site")
+coords
+
+joined <- dbGetQuery(conn, "SELECT Site.lat, Site.long, Visited.dated, Survey.quant, Survey.reading 
+                            FROM Site JOIN Visited JOIN Survey
+                            ON Site.name = Visited.Site
+                            AND Visited.id = Survey.taken;")
+joined
+
+library(dplyr)
+install.packages("dbplyr")
+library(dbplyr)
+
+tbl(conn, "Survey") %>%
+  select(person, quant, reading) %>%
+  filter(quant == "sal") %>%
+  collect() %>%
+  ggplot(aes(x = person, y = reading)) +
+  geom_boxplot()
