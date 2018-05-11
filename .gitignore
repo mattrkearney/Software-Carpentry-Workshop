@@ -4,3 +4,12 @@
 .Ruserdata
 results/
 data/
+README.md
+SWC.Rproj
+TODO
+config
+diagnostics
+lib
+munge
+profiling
+tests
